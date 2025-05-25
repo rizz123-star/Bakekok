@@ -74,74 +74,33 @@
       font-size: 14px;
       white-space: pre-line;
     }
-
-    .hidden {
-      display: none;
-    }
   </style>
 </head>
 <body>
 
-  <div class="container" id="loginBox">
-    <h2>Login</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button class="btn" onclick="login()">Login</button>
-  </div>
-
-  <div class="container hidden" id="attackBox">
+  <div class="container" id="attackBox">
     <h2>Attack Panel</h2>
     <select id="layer" onchange="switchLayer()">
       <option value="layer7">Layer 7</option>
       <option value="layer4">Layer 4</option>
     </select>
 
-    <input type="text" id="target" placeholder="Target (e.g. https://example.com)">
+    <input type="text" id="target" placeholder="Target (ip/https://example.com)">
     <input type="number" id="time" placeholder="Time (seconds)">
-    <select id="method">
-      <!-- Default Layer 7 methods -->
-    </select>
+    <select id="method"></select>
 
     <button class="btn" onclick="startAttack()">Launch Attack</button>
     <div class="status" id="attackStatus">Status: Waiting...</div>
   </div>
 
-  <audio id="attackAudio" src="attack.mp3"></audio>
+  <audio id="attackAudio" src="https://files.catbox.moe/rnbbii.mp3"></audio>
 
   <script>
-    const loginBox = document.getElementById('loginBox');
-    const attackBox = document.getElementById('attackBox');
     const methodSelect = document.getElementById('method');
     const attackStatus = document.getElementById('attackStatus');
     const attackAudio = document.getElementById('attackAudio');
 
-    if (localStorage.getItem("loggedIn") === "true") {
-      loginBox.classList.add("hidden");
-      attackBox.classList.remove("hidden");
-      switchLayer(); // Load methods on refresh
-    }
-
-    function login() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-
-      fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          localStorage.setItem("loggedIn", "true");
-          loginBox.classList.add("hidden");
-          attackBox.classList.remove("hidden");
-          switchLayer();
-        } else {
-          alert("Login Failed: " + data.message);
-        }
-      });
-    }
+    switchLayer();
 
     function switchLayer() {
       const layer = document.getElementById('layer').value;
