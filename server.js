@@ -6,27 +6,13 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
-// Hanya user ini yang boleh login
-const USERNAME = 'rizz';
-const PASSWORD = '1';
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static(__dirname)); // Serve file statis
+app.use(express.static(__dirname)); // Serve file statis (HTML, JS, CSS)
 
 // Halaman utama
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Proses login
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === USERNAME && password === PASSWORD) {
-    res.json({ success: true });
-  } else {
-    res.json({ success: false, message: 'Invalid credentials' });
-  }
 });
 
 // Endpoint serangan
@@ -67,14 +53,24 @@ app.post('/attack', (req, res) => {
   }
 
   exec(command, (error, stdout, stderr) => {
+    console.log(`Menjalankan: ${command}`);
+    if (stdout) console.log(`Output:\n${stdout}`);
+    if (stderr) console.log(`Stderr:\n${stderr}`);
+
     if (error) {
-      return res.status(500).json({ error: `Execution error: ${stderr}` });
+      return res.status(500).json({ error: `Execution error: ${stderr || error.message}` });
     }
+
     res.json({ status: 'Attack started', command, output: stdout });
   });
 });
 
+// Fallback 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Endpoint not found' });
+});
+
 // Jalankan server
 app.listen(port, () => {
-  console.log(`Server berjalan di http://localhost:${port}`);
+  console.log(`Server aktif di http://localhost:${port}`);
 });
