@@ -99,8 +99,11 @@
     const methodSelect = document.getElementById('method');
     const attackStatus = document.getElementById('attackStatus');
     const attackAudio = document.getElementById('attackAudio');
+    const btn = document.querySelector('.btn');
 
-    switchLayer();
+    window.onload = () => {
+      switchLayer();
+    };
 
     function switchLayer() {
       const layer = document.getElementById('layer').value;
@@ -126,10 +129,13 @@
       const method = document.getElementById('method').value;
       const layer = document.getElementById('layer').value;
 
-      if (!target || !time || !method) {
-        attackStatus.innerText = "Status: Lengkapi semua field!";
+      if (!target || !time || !method || isNaN(time) || Number(time) <= 0) {
+        attackStatus.innerText = "Status: Lengkapi semua field dengan benar!";
         return;
       }
+
+      btn.disabled = true;
+      btn.innerText = "Launching...";
 
       fetch('/attack', {
         method: 'POST',
@@ -144,6 +150,7 @@
 Target: ${target}
 Time: ${time}s
 Method: ${method}`;
+          attackAudio.currentTime = 0;
           attackAudio.play();
         } else {
           attackStatus.innerText = `Status: Error - ${data.error}`;
@@ -151,6 +158,10 @@ Method: ${method}`;
       })
       .catch(err => {
         attackStatus.innerText = `Status: Request error - ${err}`;
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerText = "Launch Attack";
       });
     }
   </script>
